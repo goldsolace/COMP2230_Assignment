@@ -23,10 +23,11 @@ public class Heap
 		
 		int temp = v[i];
 		while (2*i <= Capacity) {
+			
 			int child = 2*i;
-			if (child <Capacity && v[child+1]>v[child])
+			if (child <Capacity && v[child+1]<v[child])
 				child=child+1;
-			if (v[child] > temp)
+			if (v[child] < temp)
 				v[i] = v[child];
 			else
 				break;
