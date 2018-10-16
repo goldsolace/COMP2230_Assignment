@@ -40,11 +40,19 @@ public class Heap
 		for (int i=Capacity/2; i>=1; i--)
 			Siftdown(v,i);
 	}
-}
-//Everything complies up until main but I'm not sure how to check if it its an error with the class or just errors below.
-public static void main(String[] args)
-{
-	int[] testArray = (66,12,312,25,8,109,7,18);
-	Heap testHeap = Heap(testArray);
-	System.out.println(Arrays.toString(testHeap.heap))
+	public static void main(String[] args)
+	{
+	int[] testArray = new int[9];
+	testArray[1]= 66;
+	testArray[2]= 12;
+	testArray[3]= 312;
+	testArray[4]= 25;
+	testArray[5]= 8;
+	testArray[6]= 109;
+	testArray[7]= 7;
+	testArray[8]= 18;
+	
+	Heap testHeap = new Heap(testArray);
+	System.out.println(Arrays.toString(testHeap.heap));
+	}
 }
