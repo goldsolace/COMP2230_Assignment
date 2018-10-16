@@ -41,7 +41,7 @@ public class Heap
 			Siftdown(v,i);
 	}
 }
-
+//Everything complies up until main but I'm not sure how to check if it its an error with the class or just errors below.
 public static void main(String[] args)
 {
 	int[] testArray = (66,12,312,25,8,109,7,18);
