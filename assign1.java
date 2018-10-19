@@ -1,12 +1,8 @@
-import java.io.*;
+import java.io.File;
 import java.util.*;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
-import org.w3c.dom.Element;
-import java.io.File;
+import org.w3c.dom.*;
 
 
 /**
@@ -20,19 +16,18 @@ import java.io.File;
 public class assign1 {
 	public static boolean isCriterionTime;
 
-	private static List<Station> stations = new ArrayList<Station>();
-	private static List<Station> origin = new ArrayList<Station>();
-	private	static Station destination = new Station(); 
-	private	static HashMap<String, Station> map = new HashMap<String, Station>();
+	private static List<Station> origins = new ArrayList<Station>();
+	private static List<Station> destinations = new ArrayList<Station>();
+	private	static HashMap<String, Station> stations = new HashMap<String, Station>();
 
 	/**
 	 * Main Method.
 	 *
-	 * javac assign1.java && java assign1 RailNetwork.xml
 	 * javac assign1.java && java assign1 RailNetwork.xml 'Sydenham' 'Petersham' time
 	 * javac assign1.java && java assign1 RailNetwork.xml 'Denistone' 'Stanmore' changes
 	 * javac assign1.java && java assign1 RailNetwork.xml 'Macarthur' 'Warrawee' time
 	 * javac assign1.java && java assign1 RailNetwork.xml 'Circular Quay' 'North Sydney' time
+	 * javac assign1.java && java assign1 RailNetwork.xml 'Waterfall' 'Carlingford' time
 	 *
 	 * List of Stations
 	 * Wahroonga, Bexley North, Burwood, Como, Seven Hills, Macquarie University, Mascot, Heathcote,
@@ -61,178 +56,234 @@ public class assign1 {
 	public static void main(String[] args) {
 		
 		try {
+			// Set criterion
 			if ("time".equals(args[3])) {
 				isCriterionTime = true;
 			} else {
 				isCriterionTime = false;
 			}
 
-			File file = new File(args[0]);
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(file);
-
-			doc.getDocumentElement().normalize();
-
-			NodeList stationNodes = doc.getElementsByTagName("Station");
-
-			System.out.println(stationNodes.getLength());
+			// Read in and create graph
+			ParseXML(args[0], args[1], args[2]);
 			
-			for (int i = 0; i < stationNodes.getLength(); i++) {
-
-				String name = "";
-				String line = "";
-
-				Node sNode = stationNodes.item(i);
-				
-				if (sNode.getNodeType() == Node.ELEMENT_NODE) {
-
-					// Create station
-					Element station = (Element) sNode;
-					name = station.getElementsByTagName("Name").item(0).getTextContent();
-					line = station.getElementsByTagName("Line").item(0).getTextContent();
-					
-					Station s = new Station(name, line);
-					map.put(name+line,s);
-
-					if (name.equals(args[1])) {
-						origin.add(s);
-					} else if (name.equals(args[2])) {
-						destination = s;
-					}
-					
-					// Add edges to station
-					NodeList edges = station.getElementsByTagName("StationEdge");
-					for (int j = 0; j < edges.getLength(); j++) {
-
-						Node eNode = edges.item(j);
-						
-						if (eNode.getNodeType() == Node.ELEMENT_NODE) {
-							Element eEdge = (Element) eNode;
-							name = eEdge.getElementsByTagName("Name").item(0).getTextContent();
-							line = eEdge.getElementsByTagName("Line").item(0).getTextContent();
-							int weight = Integer.parseInt(eEdge.getElementsByTagName("Duration").item(0).getTextContent());
-							s.addEdge(new Edge(name, line, weight));
-						}
-						
-					}
-
-					// Add station to list of stations
-					stations.add(s);
-				}
+			// Create single source origin station with 0 weight edges to all lines at origin station
+			Station origin = new Station(origins.get(0).getName(), "");
+			for (Station s : origins) {
+				origin.addEdge(new Edge(s.getName(), s.getLine(), 0));
 			}
 
-			for (Station s : origin) {
-				dijkstra(s);
-			}
+			// Perform dijkstra's algorithm on origin
+			dijkstra(origin);
 
+			// Sort destinations so optimal destination line at index 0
+			Collections.sort(destinations);
 			
-			Collections.sort(stations);
-			int time = 0;
 			// Print out optimal path to destination
-			for (Station s : stations) {
-				
-				if (s.getName().equals(destination.getName())) {
-					System.out.print("[Time: "+s.getTime()+", Changes: "+s.getChanges()+"] "+origin.get(0).getName()+" - "+destination.getName()+"\n");
-					
-					Station cur = s.getPath().get(0);
-					Station next = s.getPath().get(0);
-					for (int i = 0; i < s.getPath().size()-1; i++) {
-						cur = s.getPath().get(i);
-						next = s.getPath().get(i+1);
+			output(destinations.get(0));
 
-
-						for (Edge e : cur.getEdges()) {
-							if (e.getStation() == next) {
-								time += cur.getEdges().get(cur.getEdges().indexOf(e)).getDuration();
-							}
-						}
-						
-						if (cur.getName().equals(next.getName())) {
-							cur = s.getPath().get(++i);
-							next = s.getPath().get(i+1);
-							for (Edge e : cur.getEdges()) {
-								if (e.getStation() == next) {
-									time += cur.getEdges().get(cur.getEdges().indexOf(e)).getDuration();
-								}
-							}
-							System.out.println("then change to line "+cur.getLine()+", and continue to "+next.getName()+";");
-
-						} else {
-							System.out.println("From "+cur.getName()+", take line "+cur.getLine()+" to station "+next.getName()+";");
-						}
-					}
-					System.out.println("From "+next.getName()+", take line "+next.getLine()+" to station "+s.getName()+".");
-
-					for (Edge e : next.getEdges()) {
-						if (e.getStation() == s) {
-							time += next.getEdges().get(next.getEdges().indexOf(e)).getDuration();
-						}
-					}
-
-					if (isCriterionTime) {
-						System.out.println("The total trip will take approximately "+s.getTime()+" minutes and will have "+s.getChanges()+" changes.");
-					} else {
-						System.out.println("The total trip will have "+s.getChanges()+" changes and will take approximately "+s.getTime()+" minutes.");
-					}
-					break;
-				}
-			}
-			System.out.println(time);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static void dijkstra(Station origin){
+	/**
+	 * Parse an xml rail network file of stations and station edges to create a
+	 * graph of stations with adjacency lists for it's edges.
+	 *
+	 * @param fileName name of rail network xml file
+	 * @param origin station name
+	 * @param destination station name
+	 */
+	public static void ParseXML(String fileName, String origin, String destination) throws Exception {
+		// Open XML file and build DOM
+		File file = new File(fileName);
+		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+		Document doc = dBuilder.parse(file);
+		doc.getDocumentElement().normalize();
 
+		// Get list of stations
+		NodeList stationNodes = doc.getElementsByTagName("Station");
+
+		// Number of Stations
+		System.out.println("Stations: "+stationNodes.getLength()+"\n");
+		
+		// Loop through stations 
+		for (int i = 0; i < stationNodes.getLength(); i++) {
+
+			String name = "";
+			String line = "";
+			Node sNode = stationNodes.item(i);
+			if (sNode.getNodeType() == Node.ELEMENT_NODE) {
+				Element station = (Element) sNode;
+				
+				// Create station
+				name = station.getElementsByTagName("Name").item(0).getTextContent();
+				line = station.getElementsByTagName("Line").item(0).getTextContent();
+				Station s = new Station(name, line);
+
+				// Store in hashmap
+				stations.put(name+line,s);
+
+				// Check if station is origin or destination
+				if (name.equals(origin)) {
+					origins.add(s);
+				} else if (name.equals(destination)) {
+					destinations.add(s);
+				}
+				
+				// Loop through edges
+				NodeList edges = station.getElementsByTagName("StationEdge");
+				
+				for (int j = 0; j < edges.getLength(); j++) {
+					Node eNode = edges.item(j);
+					
+					if (eNode.getNodeType() == Node.ELEMENT_NODE) {
+						Element eEdge = (Element) eNode;
+
+						// Add edge to station
+						name = eEdge.getElementsByTagName("Name").item(0).getTextContent();
+						line = eEdge.getElementsByTagName("Line").item(0).getTextContent();
+						int weight = Integer.parseInt(eEdge.getElementsByTagName("Duration").item(0).getTextContent());
+						s.addEdge(new Edge(name, line, weight));
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Dijkstra's algorithm implentation using adjency list graph and 
+	 * indirect heap priority queue. It calculates the optimal path from the
+	 * origin station to every other station optimised by either minimum time or
+	 * least number of line changes.
+	 *
+	 * @param origin station
+	 */
+	public static void dijkstra(Station origin) {
+
+		// No time or changes to go from origin to origin
 		origin.setTime(0);
 		origin.setChanges(0);
+
+		// Add origin to queue
 		PriorityQueue<Station> queue = new PriorityQueue<Station>();
 		queue.add(origin);
 
+		// While there are edges that haven't been visited
 		while (!queue.isEmpty()) {
-			Station s = queue.poll();
-			
-			for (Edge e : s.getEdges()) {
-				e.updateStation(map);
-				int newTime = s.getTime() + e.getDuration();
-				int change = s.getName().equals(e.getName()) && e.getDuration() == 15 ? 1 : 0;
-				int newChanges = s.getChanges() + change;
-				//s.setChanges(newChanges);
-				
-				if (isCriterionTime) {
-					s.setChanges(newChanges);
-					if (e.getStation().getTime() > newTime) {
-						// Remove the station from the queue to update the time value.
-						queue.remove(e.getStation());
-						e.getStation().setTime(newTime);
-						
-						// Take the path visited till now and add the new station
-						e.getStation().setPath(new ArrayList<Station>(s.getPath()));
-						e.getStation().addToPath(s);
-						
-						// Add back in the station
-						queue.add(e.getStation());			
-					}
-				} else {
 
-					if (e.getStation().getChanges() > newChanges) {
-						// Remove the station from the queue to update the time value.
-						queue.remove(e.getStation());
-						e.getStation().setChanges(newChanges);
-						e.getStation().setTime(newTime);
+			Station station = queue.poll();
+			
+			// Loop through all edges of station
+			for (Edge edge : station.getEdges()) {
+
+				// Make sure edge has a reference to it's station
+				edge.updateStation(stations);
+
+				// Time to reach edge station from current station
+				int newTime = station.getTime() + edge.getDuration();
+
+				// If station names are the same and duration is 15 then it's a line change
+				int change = station.getName().equals(edge.getName()) && edge.getDuration() == 15 ? 1 : 0;
+				int newChanges = station.getChanges() + change;
+				
+				// Optimise for time
+				if (isCriterionTime) {
+					
+					if (edge.getStation().getTime() > newTime) {
+						// Remove the station from the queue to update the time and changes.
+						queue.remove(edge.getStation());
+						edge.getStation().setTime(newTime);
+						edge.getStation().setChanges(newChanges);
 						
-						// Take the path visited till now and add the new station
-						e.getStation().setPath(new ArrayList<Station>(s.getPath()));
-						e.getStation().addToPath(s);
+						// Add the new station to path
+						edge.getStation().setPath(new ArrayList<Station>(station.getPath()));
+						edge.getStation().addToPath(station);
 						
 						// Add back in the station
-						queue.add(e.getStation());					
+						queue.add(edge.getStation());
 					}
-				}
-				
+				// Optimise for changes
+				} else {
+					if (edge.getStation().getChanges() > newChanges) {
+						// Remove the station from the queue to update the changes and time.
+						queue.remove(edge.getStation());
+						edge.getStation().setChanges(newChanges);
+						edge.getStation().setTime(newTime);
+						
+						// Add the new station to path
+						edge.getStation().setPath(new ArrayList<Station>(station.getPath()));
+						edge.getStation().addToPath(station);
+						
+						// Add back in the station
+						queue.add(edge.getStation());
+					}
+				}	
 			}
 		}
+	}
+
+	/**
+	 * Print out the optimal path from origin to destination station
+	 * in specific format stating from station, to station, line used, line changes
+	 * and time and changes of total trip.
+	 *
+	 * @param destination station name
+	 */
+	public static void output(Station destination) {
+		int time = 0;
+		//System.out.print("[Time: "+destination.getTime()+", Changes: "+destination.getChanges()+"] "+origin.getName()+" - "+destination.getName()+"\n");
+		ArrayList<Station> path = destination.getPath();
+
+		Station cur = path.get(0);
+		Station next = path.get(0);
+
+		// Loop through stations along path
+		for (int i = 1; i < path.size()-1; i++) {
+			cur = path.get(i);
+			next = path.get(i+1);
+
+			// === Only for testing correct time===
+			for (Edge e : cur.getEdges()) {
+				if (e.getStation() == next) {
+					time += cur.getEdges().get(cur.getEdges().indexOf(e)).getDuration();
+				}
+			}
+			
+			// If current and next station name is the same then it's a line change
+			if (cur.getName().equals(next.getName())) {
+				cur = path.get(++i);
+				next = path.get(i+1);
+
+				System.out.println("then change to line "+cur.getLine()+", and continue to "+next.getName()+";");
+
+				// === Only for testing correct time===
+				for (Edge e : cur.getEdges()) {
+					if (e.getStation() == next) {
+						time += cur.getEdges().get(cur.getEdges().indexOf(e)).getDuration();
+					}
+				}
+			} else {
+				System.out.println("From "+cur.getName()+", take line "+cur.getLine()+" to station "+next.getName()+";");
+			}
+		}
+		System.out.println("From "+next.getName()+", take line "+next.getLine()+" to station "+destination.getName()+".");
+
+		// === Only for testing correct time===
+		for (Edge e : next.getEdges()) {
+			if (e.getStation() == destination) {
+				time += next.getEdges().get(next.getEdges().indexOf(e)).getDuration();
+			}
+		}
+
+		if (isCriterionTime) {
+			System.out.println("The total trip will take approximately "+destination.getTime()+" minutes and will have "+destination.getChanges()+" changes.");
+		} else {
+			System.out.println("The total trip will have "+destination.getChanges()+" changes and will take approximately "+destination.getTime()+" minutes.");
+		}
+		
+		// === Only for testing correct time===
+		System.out.println("\nTime it should have taken: "+time);
 	}
 }
