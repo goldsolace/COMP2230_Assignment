@@ -21,7 +21,7 @@ public class assign1 {
 	public static boolean isCriterionTime;
 
 	private static List<Station> stations = new ArrayList<Station>();
-	private static Station origin = new Station();
+	private static List<Station> origin = new ArrayList<Station>();
 	private	static Station destination = new Station(); 
 	private	static HashMap<String, Station> map = new HashMap<String, Station>();
 
@@ -29,8 +29,10 @@ public class assign1 {
 	 * Main Method.
 	 *
 	 * javac assign1.java && java assign1 RailNetwork.xml
-	 * javac assign1.java && java assign1 RailNetwork.xml 'Sydenham' 'Liverpool' time
+	 * javac assign1.java && java assign1 RailNetwork.xml 'Sydenham' 'Petersham' time
 	 * javac assign1.java && java assign1 RailNetwork.xml 'Denistone' 'Stanmore' changes
+	 * javac assign1.java && java assign1 RailNetwork.xml 'Macarthur' 'Warrawee' time
+	 * javac assign1.java && java assign1 RailNetwork.xml 'Circular Quay' 'North Sydney' time
 	 *
 	 * List of Stations
 	 * Wahroonga, Bexley North, Burwood, Como, Seven Hills, Macquarie University, Mascot, Heathcote,
@@ -81,7 +83,7 @@ public class assign1 {
 				String name = "";
 				String line = "";
 
-				Node sNode = stationNodes.item(i);				
+				Node sNode = stationNodes.item(i);
 				
 				if (sNode.getNodeType() == Node.ELEMENT_NODE) {
 
@@ -94,7 +96,7 @@ public class assign1 {
 					map.put(name+line,s);
 
 					if (name.equals(args[1])) {
-						origin = s;
+						origin.add(s);
 					} else if (name.equals(args[2])) {
 						destination = s;
 					}
@@ -120,30 +122,53 @@ public class assign1 {
 				}
 			}
 
-			dijkstra(origin);
+			for (Station s : origin) {
+				dijkstra(s);
+			}
 
-			// Print out shortest path to destination
+			
 			Collections.sort(stations);
-
-
-            for (Station s : stations) {
-            	if (s.getName().equals(destination.getName())) {
-					//System.out.print("[Time: "+s.getTime()+", Changes: "+s.getChanges()+"] "+origin.getName()+" - "+destination.getName()+"\n");
-            		Station cur = s.getPath().get(0);
+			int time = 0;
+			// Print out optimal path to destination
+			for (Station s : stations) {
+				
+				if (s.getName().equals(destination.getName())) {
+					System.out.print("[Time: "+s.getTime()+", Changes: "+s.getChanges()+"] "+origin.get(0).getName()+" - "+destination.getName()+"\n");
+					
+					Station cur = s.getPath().get(0);
 					Station next = s.getPath().get(0);
 					for (int i = 0; i < s.getPath().size()-1; i++) {
 						cur = s.getPath().get(i);
 						next = s.getPath().get(i+1);
+
+
+						for (Edge e : cur.getEdges()) {
+							if (e.getStation() == next) {
+								time += cur.getEdges().get(cur.getEdges().indexOf(e)).getDuration();
+							}
+						}
 						
 						if (cur.getName().equals(next.getName())) {
 							cur = s.getPath().get(++i);
 							next = s.getPath().get(i+1);
+							for (Edge e : cur.getEdges()) {
+								if (e.getStation() == next) {
+									time += cur.getEdges().get(cur.getEdges().indexOf(e)).getDuration();
+								}
+							}
 							System.out.println("then change to line "+cur.getLine()+", and continue to "+next.getName()+";");
+
 						} else {
 							System.out.println("From "+cur.getName()+", take line "+cur.getLine()+" to station "+next.getName()+";");
 						}
 					}
 					System.out.println("From "+next.getName()+", take line "+next.getLine()+" to station "+s.getName()+".");
+
+					for (Edge e : next.getEdges()) {
+						if (e.getStation() == s) {
+							time += next.getEdges().get(next.getEdges().indexOf(e)).getDuration();
+						}
+					}
 
 					if (isCriterionTime) {
 						System.out.println("The total trip will take approximately "+s.getTime()+" minutes and will have "+s.getChanges()+" changes.");
@@ -151,10 +176,9 @@ public class assign1 {
 						System.out.println("The total trip will have "+s.getChanges()+" changes and will take approximately "+s.getTime()+" minutes.");
 					}
 					break;
-					
-					
-            	}
+				}
 			}
+			System.out.println(time);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -175,15 +199,14 @@ public class assign1 {
 				int newTime = s.getTime() + e.getDuration();
 				int change = s.getName().equals(e.getName()) && e.getDuration() == 15 ? 1 : 0;
 				int newChanges = s.getChanges() + change;
+				//s.setChanges(newChanges);
 				
 				if (isCriterionTime) {
+					s.setChanges(newChanges);
 					if (e.getStation().getTime() > newTime) {
 						// Remove the station from the queue to update the time value.
 						queue.remove(e.getStation());
 						e.getStation().setTime(newTime);
-						if (e.getStation().getChanges() > newChanges) {
-							e.getStation().setChanges(newChanges);
-						}
 						
 						// Take the path visited till now and add the new station
 						e.getStation().setPath(new ArrayList<Station>(s.getPath()));
@@ -193,13 +216,12 @@ public class assign1 {
 						queue.add(e.getStation());			
 					}
 				} else {
+
 					if (e.getStation().getChanges() > newChanges) {
 						// Remove the station from the queue to update the time value.
 						queue.remove(e.getStation());
 						e.getStation().setChanges(newChanges);
-						if (e.getStation().getTime() > newTime) {
-							e.getStation().setTime(newTime);
-						}
+						e.getStation().setTime(newTime);
 						
 						// Take the path visited till now and add the new station
 						e.getStation().setPath(new ArrayList<Station>(s.getPath()));

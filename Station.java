@@ -14,8 +14,8 @@ public class Station implements Comparable<Station>{
 	private String line;
 	private ArrayList<Edge> edges;
 	private ArrayList<Station> path;
-	private int time = Integer.MAX_VALUE;
-	private int changes = Integer.MAX_VALUE;
+	private int time;
+	private int changes;
 
 	/**
 	 * Default Constructor.
@@ -25,6 +25,13 @@ public class Station implements Comparable<Station>{
 		this.line = "";
 		edges = new ArrayList<Edge>();
 		path = new ArrayList<Station>();
+		if (assign1.isCriterionTime) {
+			time = Integer.MAX_VALUE;
+			changes = 0;
+		} else {
+			changes = Integer.MAX_VALUE;
+			time = 0;
+		}
 	}
 	
 	/**
@@ -34,10 +41,9 @@ public class Station implements Comparable<Station>{
 	 * @param line the station is on
 	 */
 	public Station(String name, String line) {
+		this();
 		this.name = name;
 		this.line = line;
-		edges = new ArrayList<Edge>();
-		path = new ArrayList<Station>();
 	}
 
 	/**
