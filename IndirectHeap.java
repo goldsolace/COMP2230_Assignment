@@ -1,3 +1,10 @@
+/**
+ * Test IndirectHeap
+ * 
+ * @author Ashwin Deen Masi
+ * @studentID 3163458
+ * @lastModified: 19-10-2018
+ */
 import java.util.*;
 //changing original heap into a direct heap. Will start working with an array of ints of 8 length 
 public class IndirectHeap
@@ -21,7 +28,7 @@ public class IndirectHeap
 			outof[i]=i;
 		}
 	} 	
-	//Take input array and reorders it into a heap using Heapify 
+	//Take input array and places it into the key. Then will order into and outof to make into a heap 
 	public IndirectHeap(int[] array)
 	{
 		key = array;
@@ -34,6 +41,7 @@ public class IndirectHeap
 		Heapify(key,outof,into);
 	}
 	//makes subtree rooted at i into a heap
+	//v is key, O is outof, I is into
 	private void Siftdown(int[] v,int[] O, int[] I,int i)
 	{
 		
@@ -41,8 +49,10 @@ public class IndirectHeap
 		while (2*i <= Capacity) {
 			
 			int child = 2*i;
+			//If the node has children then see which child is smaller and choose that one
 			if (child <Capacity && v[O[child+1]]<v[O[child]])
 				child=child+1;
+			//If child is smaller then parent rearange into/outof  
 			if (v[O[child]] < v[temp]) {
 				O[i] = O[child];
 				I[O[i]]=i;
@@ -54,11 +64,17 @@ public class IndirectHeap
 		O[i] = temp;
 		I[O[i]]=i;
 	}
-	//Uses Siftdown to make whole array into a heap 
+	//Uses Siftdown to make whole array into a heap
+	//v is key O in outof, I is into
 	private void Heapify(int[] v, int[] O, int[] I)
 	{
+		//Run Siftdown for all nodes excluding leaves
 		for (int i=Capacity/2; i>=1; i--)
 			Siftdown(v,O,I,i);
+	}
+	public int Smallest()
+	{
+		return key[outof[1]];
 	}
 	public static void main(String[] args)
 	{
@@ -76,5 +92,6 @@ public class IndirectHeap
 	System.out.println(Arrays.toString(testHeap.key));
 	System.out.println(Arrays.toString(testHeap.into));
 	System.out.println(Arrays.toString(testHeap.outof));
+	System.out.println(testHeap.Smallest());
 	}
 }
