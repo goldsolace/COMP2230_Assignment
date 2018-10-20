@@ -69,13 +69,13 @@ public class assign1 {
 			// Create single source origin station with 0 weight edges to all lines at origin station
 			Station origin = new Station(origins.get(0).getName(), "");
 			for (Station s : origins) {
-				origin.addEdge(new Edge(s.getName(), s.getLine(), 0));
+				origin.addEdge(new Edge(s, 0));
 			}
 
 			// Perform dijkstra's algorithm on origin
 			dijkstra(origin);
 
-			// Sort destinations so optimal destination line at index 0
+			// Sort destinations so optimal destination line at inde
 			Collections.sort(destinations);
 			
 			// Print out optimal path to destination
@@ -106,7 +106,8 @@ public class assign1 {
 		NodeList stationNodes = doc.getElementsByTagName("Station");
 
 		// Number of Stations
-		System.out.println("Stations: "+stationNodes.getLength()+"\n");
+		System.out.println("Stations: "+stationNodes.getLength());
+		int l = 0;
 		
 		// Loop through stations 
 		for (int i = 0; i < stationNodes.getLength(); i++) {
@@ -120,10 +121,17 @@ public class assign1 {
 				// Create station
 				name = station.getElementsByTagName("Name").item(0).getTextContent();
 				line = station.getElementsByTagName("Line").item(0).getTextContent();
-				Station s = new Station(name, line);
+				
+				Station s;
 
-				// Store in hashmap
-				stations.put(name+line,s);
+				// Check if station already exists
+				if (stations.containsKey(name+line)) {
+					s = stations.get(name+line);
+				} else {
+					// Create station and store in hashmap
+					s = new Station(name, line);
+					stations.put(name+line,s);
+				}
 
 				// Check if station is origin or destination
 				if (name.equals(origin)) {
@@ -136,6 +144,7 @@ public class assign1 {
 				NodeList edges = station.getElementsByTagName("StationEdge");
 				
 				for (int j = 0; j < edges.getLength(); j++) {
+					l++;
 					Node eNode = edges.item(j);
 					
 					if (eNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -145,11 +154,19 @@ public class assign1 {
 						name = eEdge.getElementsByTagName("Name").item(0).getTextContent();
 						line = eEdge.getElementsByTagName("Line").item(0).getTextContent();
 						int weight = Integer.parseInt(eEdge.getElementsByTagName("Duration").item(0).getTextContent());
-						s.addEdge(new Edge(name, line, weight));
+
+						// If edge station not read in yet then create it and store in hashmap
+						if (!stations.containsKey(name+line)) {
+							stations.put(name+line, new Station(name, line));
+						}
+
+						// Create edge and add to station
+						s.addEdge(new Edge(stations.get(name+line), weight));
 					}
 				}
 			}
 		}
+		System.out.println("Edges: "+l+"\n");
 	}
 
 	/**
@@ -178,9 +195,6 @@ public class assign1 {
 			// Loop through all edges of station
 			for (Edge edge : station.getEdges()) {
 
-				// Make sure edge has a reference to it's station
-				edge.updateStation(stations);
-
 				// Time to reach edge station from current station
 				int newTime = station.getTime() + edge.getDuration();
 
@@ -192,6 +206,7 @@ public class assign1 {
 				if (isCriterionTime) {
 					
 					if (edge.getStation().getTime() > newTime) {
+
 						// Remove the station from the queue to update the time and changes.
 						queue.remove(edge.getStation());
 						edge.getStation().setTime(newTime);

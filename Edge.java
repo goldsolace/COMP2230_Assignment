@@ -10,50 +10,27 @@ import java.util.*;
 
 public class Edge {
 	
-	private String name;
-	private String line;
-	private int duration;
 	private Station station;
+	private int duration;
 	
 	/**
 	 * Constructs an edge from parameters.
 	 *
-	 * @param name of the connecting station
-	 * @param line the connecting station is on
+	 * @param station the connecting station
 	 * @param duration time to connect to station
 	 */
-	public Edge(String name, String line, int duration) {
-		this.name = name;
-		this.line = line;
+	public Edge(Station station, int duration) {
+		this.station = station;
 		this.duration = duration;
-		this.station = null;
 	}
 
 	/**
-	 * Returns name.
+	 * Returns name of connecting station.
 	 *
 	 * @return name
 	 */
 	public String getName() {
-		return name;
-	}
-
-	/**
-	 * Returns name.
-	 *
-	 * @return line
-	 */
-	public String getLine() {
-		return line;
-	}
-
-	/**
-	 * Returns duration.
-	 *
-	 * @return duration
-	 */
-	public int getDuration() {
-		return duration;
+		return station.getName();
 	}
 
 	/**
@@ -66,12 +43,12 @@ public class Edge {
 	}
 
 	/**
-	 * ___________________________________________________
+	 * Returns duration.
 	 *
-	 * @param map
+	 * @return duration
 	 */
-	public void updateStation(HashMap<String, Station> map) {
-		station = map.get(name+line);
+	public int getDuration() {
+		return duration;
 	}
 
 	/**
@@ -81,7 +58,7 @@ public class Edge {
 	 */
 	@Override   
 	public String toString() {
-		return name+": "+line+": "+duration;
+		return station+": "+duration;
 	}
 }
 
