@@ -3,13 +3,13 @@
  * 
  * @author Ashwin Deen Masi
  * @studentID 3163458
- * @lastModified: 19-10-2018
+ * @lastModified: 22-10-2018
  */
 import java.util.*;
-//changing original heap into a direct heap. Will start working with an array of ints of 8 length 
+//Indirect heap of intergers. Capacity can be changed we adding/taking away elements and when first array is added. Enqueue and Dequeue.
 public class IndirectHeap
 {
-	private int Capacity = 8;
+	private int Capacity= 1;
 	//Array of Values 
 	private int[] key;
 	//Array of ints which list where the key is placed in the heap
@@ -23,7 +23,7 @@ public class IndirectHeap
 		key = 	new int[Capacity+1];
 		into = 	new int[Capacity+1];
 		outof = new int[Capacity+1];
-		for (int i=1; i<=8; i++) {
+		for (int i=1; i<=Capacity; i++) {
 			into[i]=i;
 			outof[i]=i;
 		}
@@ -32,9 +32,10 @@ public class IndirectHeap
 	public IndirectHeap(int[] array)
 	{
 		key = array;
+		Capacity = key.length-1;
 		into = 	new int[Capacity+1];
 		outof = new int[Capacity+1];
-		for (int i=1; i<=8; i++) {
+		for (int i=1; i<=Capacity; i++) {
 			into[i]=i;
 			outof[i]=i;
 		}
@@ -72,13 +73,77 @@ public class IndirectHeap
 		for (int i=Capacity/2; i>=1; i--)
 			Siftdown(v,O,I,i);
 	}
+	//places a new value in the heap then rearranges to keep structure 
+	public void Enqueue(int Value)
+	{
+		Capacity++;
+		int[] tempKey = new int[Capacity+1];
+		int[] tempInto = new int[Capacity+1];
+		int[] tempOutof = new int[Capacity+1];
+		for (int i=1; i<=Capacity-1; i++) {
+			tempKey[i] = key[i];
+			tempInto[i] = into[i];
+			tempOutof[i] = outof[i]; 
+		}
+		tempKey[Capacity] = Value;
+		tempInto[Capacity] = Capacity;
+		tempOutof[Capacity] = Capacity;
+		key = tempKey;
+		into = tempInto;
+		outof = tempOutof;
+		Heapify(key,outof,into);
+	}
+	//Removes the value in the Value position of the key
+	public void Dequeue(int Value)
+	{
+		if (Value>Capacity)
+		{
+			System.out.println("There are not this many items in the key");
+		}
+		else
+		{
+			int CInto=into[Value];
+			int[] tempInto = new int[Capacity];
+			int[] tempOutof = new int[Capacity];
+			for (int i=Value; i<=Capacity-1; i++) {
+				key[i]=key[i+1];				
+			}
+			int j=1;
+			for (int i=1; i<=Capacity; i++) {
+
+				if(into[i]==Capacity) {
+					tempInto[j]=CInto;
+					tempOutof[CInto]=j;
+					j++;
+				}
+				else if(into[i]!=CInto) {
+					tempInto[j]=into[i];
+					tempOutof[into[i]]=j;
+					j++;
+				}	
+			}
+			Capacity--;
+
+			int[] tempKey = new int[Capacity+1];
+			for (int i=1; i<=Capacity; i++) {
+				tempKey[i]=key[i];
+			}
+			key=tempKey;
+			into=tempInto;
+			outof=tempOutof;
+			Heapify(key,outof,into);
+		}
+	}
+	
+	//Return smalled value in the heap (the first value)
 	public int Smallest()
 	{
 		return key[outof[1]];
 	}
+
 	public static void main(String[] args)
 	{
-	int[] testArray = new int[9];
+	int[] testArray = new int[10];
 	testArray[1]= 28;
 	testArray[2]= 12;
 	testArray[3]= 312;
@@ -87,11 +152,17 @@ public class IndirectHeap
 	testArray[6]= 109;
 	testArray[7]= 7;
 	testArray[8]= 18;
+	testArray[9]= 1;
 	
 	IndirectHeap testHeap = new IndirectHeap(testArray);
+	testHeap.Enqueue(5);
+	
+	testHeap.Dequeue(3);
 	System.out.println(Arrays.toString(testHeap.key));
 	System.out.println(Arrays.toString(testHeap.into));
 	System.out.println(Arrays.toString(testHeap.outof));
 	System.out.println(testHeap.Smallest());
+	
+	
 	}
 }
