@@ -77,7 +77,7 @@ public class assign1 {
 			// Perform dijkstra's algorithm on origin
 			dijkstra(origin);
 
-			// Sort destinations so optimal destination line at inde
+			// Sort destinations so optimal destination line at index 0
 			Collections.sort(destinations);
 			
 			// Print out optimal path to destination
