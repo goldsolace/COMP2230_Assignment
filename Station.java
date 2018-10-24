@@ -8,7 +8,7 @@ import java.util.*;
  * @lastModified: 19-10-2018
  */
 
-public class Station implements Comparable<Station>{
+public class Station implements Comparable<Station> {
 	
 	private String name;
 	private String line;
@@ -16,22 +16,19 @@ public class Station implements Comparable<Station>{
 	private ArrayList<Station> path;
 	private int time;
 	private int changes;
+	private boolean criteria;
 
 	/**
 	 * Default Constructor.
 	 */
 	public Station() {
-		this.name = "";
-		this.line = "";
+		name = "";
+		line = "";
 		edges = new ArrayList<Edge>();
 		path = new ArrayList<Station>();
-		if (assign1.isCriterionTime) {
-			time = Integer.MAX_VALUE;
-			changes = 0;
-		} else {
-			changes = Integer.MAX_VALUE;
-			time = 0;
-		}
+		criteria = true;
+		time = Integer.MAX_VALUE;
+		changes = 0;
 	}
 	
 	/**
@@ -39,11 +36,20 @@ public class Station implements Comparable<Station>{
 	 *
 	 * @param name of the station
 	 * @param line the station is on
+	 * @param criteria true if optimise time, false for changes
 	 */
-	public Station(String name, String line) {
+	public Station(String name, String line, boolean criteria) {
 		this();
 		this.name = name;
 		this.line = line;
+		this.criteria = criteria;
+		if (criteria) {
+			time = Integer.MAX_VALUE;
+			changes = 0;
+		} else {
+			changes = Integer.MAX_VALUE;
+			time = 0;
+		}
 	}
 
 	/**
@@ -155,7 +161,7 @@ public class Station implements Comparable<Station>{
 	public int compareTo(Station other) {
 		int time = Integer.compare(this.time, other.time);
 		int changes = Integer.compare(this.changes, other.changes);
-		if (assign1.isCriterionTime) {
+		if (criteria) {
 			return time == 0 ? changes : time;
 		} else {
 			return changes == 0 ? time : changes;

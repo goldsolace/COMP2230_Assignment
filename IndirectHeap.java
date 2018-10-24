@@ -150,6 +150,13 @@ public class IndirectHeap
 
 	public static void main(String[] args)
 	{
+		Station station = new Station("Name", "Line", true);
+		station.setTime(50);
+		station.getTime(); // Returns 50
+		station.setChanges(50);
+		station.getTime(); // Returns 50
+
+
 	int[] testArray = new int[10];
 	testArray[1]= 28;
 	testArray[2]= 12;

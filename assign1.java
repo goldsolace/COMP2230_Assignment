@@ -69,7 +69,7 @@ public class assign1 {
 			ParseXML(args[0], args[1], args[2]);
 			
 			// Create single source origin station with 0 weight edges to all lines at origin station
-			Station origin = new Station(origins.get(0).getName(), "");
+			Station origin = new Station(origins.get(0).getName(), "", isCriterionTime);
 			for (Station s : origins) {
 				origin.addEdge(new Edge(s, 0));
 			}
@@ -131,7 +131,7 @@ public class assign1 {
 					s = stations.get(name+line);
 				} else {
 					// Create station and store in hashmap
-					s = new Station(name, line);
+					s = new Station(name, line, isCriterionTime);
 					stations.put(name+line,s);
 				}
 
@@ -159,7 +159,7 @@ public class assign1 {
 
 						// If edge station not read in yet then create it and store in hashmap
 						if (!stations.containsKey(name+line)) {
-							stations.put(name+line, new Station(name, line));
+							stations.put(name+line, new Station(name, line, isCriterionTime));
 						}
 
 						// Create edge and add to station
@@ -209,8 +209,7 @@ public class assign1 {
 					
 					if (edge.getStation().getTime() > newTime) {
 
-						// Remove the station from the queue to update the time and changes.
-						queue.remove(edge.getStation());
+						// Update the time and changes.
 						edge.getStation().setTime(newTime);
 						edge.getStation().setChanges(newChanges);
 						
@@ -224,8 +223,7 @@ public class assign1 {
 				// Optimise for changes
 				} else {
 					if (edge.getStation().getChanges() > newChanges) {
-						// Remove the station from the queue to update the changes and time.
-						queue.remove(edge.getStation());
+						// Update the changes and time.
 						edge.getStation().setChanges(newChanges);
 						edge.getStation().setTime(newTime);
 						
