@@ -103,7 +103,7 @@ public class IndirectHeap
 	//Removes the value in the Value position of the key
 	public void Dequeue(int Value)
 	{
-		if (Value>Capacity)
+		if (Value>Capacity||key[1]==null)
 		{
 			System.out.println("There are not this many items in the key");
 		}
