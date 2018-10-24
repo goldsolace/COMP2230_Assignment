@@ -76,22 +76,29 @@ public class IndirectHeap
 	//places a new value in the heap then rearranges to keep structure 
 	public void Enqueue(Station Value)
 	{
-		Capacity++;
-		Station[] tempKey = new Station[Capacity+1];
-		int[] tempInto = new int[Capacity+1];
-		int[] tempOutof = new int[Capacity+1];
-		for (int i=1; i<=Capacity-1; i++) {
-			tempKey[i] = key[i];
-			tempInto[i] = into[i];
-			tempOutof[i] = outof[i]; 
+		if (key[1]==null) {
+			key[1]		= Value;
+			into[1]		= 1;
+			outof[1] 	= 1;
 		}
-		tempKey[Capacity] = Value;
-		tempInto[Capacity] = Capacity;
-		tempOutof[Capacity] = Capacity;
-		key = tempKey;
-		into = tempInto;
-		outof = tempOutof;
-		Heapify(key,outof,into);
+		else {
+			Capacity++;
+			Station[] tempKey = new Station[Capacity+1];
+			int[] tempInto = new int[Capacity+1];
+			int[] tempOutof = new int[Capacity+1];
+			for (int i=1; i<=Capacity-1; i++) {
+				tempKey[i] = key[i];
+				tempInto[i] = into[i];
+				tempOutof[i] = outof[i]; 
+			}
+			tempKey[Capacity] = Value;
+			tempInto[Capacity] = Capacity;
+			tempOutof[Capacity] = Capacity;
+			key = tempKey;
+			into = tempInto;
+			outof = tempOutof;
+			Heapify(key,outof,into);
+		}
 	}
 	//Removes the value in the Value position of the key
 	public void Dequeue(int Value)
