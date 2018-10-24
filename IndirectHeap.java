@@ -100,46 +100,46 @@ public class IndirectHeap
 			Heapify(key,outof,into);
 		}
 	}
-	//Removes the value in the Value position of the key
-	public void Dequeue(int Value)
+	//Removes first value in heap
+	public void Dequeue()
 	{
-		if (Value>Capacity||key[1]==null)
-		{
-			System.out.println("There are not this many items in the key");
+		if (key[1]==null) {
+			System.out.println("Heap is empty");
 		}
-		else
+		else 
 		{
-			int CInto=into[Value];
+			Station[] tempKey = new Station[Capacity];
 			int[] tempInto = new int[Capacity];
 			int[] tempOutof = new int[Capacity];
-			for (int i=Value; i<=Capacity-1; i++) {
-				key[i]=key[i+1];				
-			}
 			int j=1;
 			for (int i=1; i<=Capacity; i++) {
-
-				if(into[i]==Capacity) {
-					tempInto[j]=CInto;
-					tempOutof[CInto]=j;
+				if(i!=outof[1]) {
+				
+					tempKey[j]=key[i];
 					j++;
 				}
-				else if(into[i]!=CInto) {
+			}
+			key = tempKey;
+			j=1;
+			for (int i=1; i<=Capacity; i++) {
+				if(into[i]==Capacity)
+				{
+					tempInto[j]=1;
+					tempOutof[1]=j;
+					j++;
+				}
+				else if (into[i]!=1)
+				{
 					tempInto[j]=into[i];
 					tempOutof[into[i]]=j;
 					j++;
-				}	
+				}
 			}
-			Capacity--;
-
-			Station[] tempKey = new Station[Capacity+1];
-			for (int i=1; i<=Capacity; i++) {
-				tempKey[i]=key[i];
-			}
-			key=tempKey;
-			into=tempInto;
-			outof=tempOutof;
-			Heapify(key,outof,into);
+			into = tempInto;
+			outof = tempOutof;
 		}
+		Capacity--;
+		Heapify(key,outof,into);
 	}
 	
 	//Return smalled value in the heap (the first value)
@@ -150,33 +150,92 @@ public class IndirectHeap
 
 	public static void main(String[] args)
 	{
-		Station station = new Station("Name", "Line", true);
-		station.setTime(50);
-		station.getTime(); // Returns 50
-		station.setChanges(50);
-		station.getTime(); // Returns 50
 
+		Station station1 = new Station("Name1", "Line1");
+		station1.setTime(50);
+		station1.getTime(); // Returns 50
+		station1.setChanges(50);
+		station1.getTime(); // Returns 50
 
-	int[] testArray = new int[10];
-	testArray[1]= 28;
-	testArray[2]= 12;
-	testArray[3]= 312;
-	testArray[4]= 25;
-	testArray[5]= 8;
-	testArray[6]= 109;
-	testArray[7]= 7;
-	testArray[8]= 18;
-	testArray[9]= 1;
-	
-	IndirectHeap testHeap = new IndirectHeap(testArray);
-	testHeap.Enqueue(5);
-	
-	testHeap.Dequeue(3);
-	System.out.println(Arrays.toString(testHeap.key));
-	System.out.println(Arrays.toString(testHeap.into));
-	System.out.println(Arrays.toString(testHeap.outof));
-	System.out.println(testHeap.Smallest());
-	
+		Station station2 = new Station("Name2", "Line2");
+		station2.setTime(25);
+		station2.getTime(); // Returns 50
+		station2.setChanges(25);
+		station2.getTime(); // Returns 50
+
+		Station station3 = new Station("Name3", "Line3");
+		station3.setTime(20);
+		station3.getTime(); // Returns 50
+		station3.setChanges(20);
+		station3.getTime(); // Returns 50
+
+		Station station4 = new Station("Name4", "Line4");
+		station4.setTime(5);
+		station4.getTime(); // Returns 50
+		station4.setChanges(5);
+		station4.getTime(); // Returns 50
+
+		Station station5 = new Station("Name5", "Line5");
+		station5.setTime(10);
+		station5.getTime(); // Returns 50
+		station5.setChanges(10);
+		station5.getTime(); // Returns 50
+
+		Station station6 = new Station("Name6", "Line6");
+		station6.setTime(35);
+		station6.getTime(); // Returns 50
+		station6.setChanges(35);
+		station6.getTime(); // Returns 50
+
+		Station station7 = new Station("Name7", "Line7");
+		station7.setTime(1);
+		station7.getTime(); // Returns 50
+		station7.setChanges(1);
+		station7.getTime(); // Returns 50
+
+		IndirectHeap Heap = new IndirectHeap();
+		Heap.Enqueue(station1);
+		Heap.Enqueue(station2);
+		Heap.Enqueue(station3);
+		Heap.Enqueue(station4);
+		Heap.Enqueue(station5);
+		Heap.Enqueue(station6);
+		Heap.Enqueue(station7);
+		
+		System.out.println(Heap.Capacity);
+		System.out.println(Arrays.toString(Heap.key));
+		System.out.println(Arrays.toString(Heap.into));
+		System.out.println(Arrays.toString(Heap.outof));
+		Heap.Dequeue();
+		System.out.println(Heap.Capacity);
+		System.out.println(Arrays.toString(Heap.key));
+		System.out.println(Arrays.toString(Heap.into));
+		System.out.println(Arrays.toString(Heap.outof));
+		Heap.Dequeue();
+		System.out.println(Heap.Capacity);
+		System.out.println(Arrays.toString(Heap.key));
+		System.out.println(Arrays.toString(Heap.into));
+		System.out.println(Arrays.toString(Heap.outof));
+		Heap.Dequeue();
+		System.out.println(Heap.Capacity);
+		System.out.println(Arrays.toString(Heap.key));
+		System.out.println(Arrays.toString(Heap.into));
+		System.out.println(Arrays.toString(Heap.outof));
+		Heap.Dequeue();
+		System.out.println(Heap.Capacity);
+		System.out.println(Arrays.toString(Heap.key));
+		System.out.println(Arrays.toString(Heap.into));
+		System.out.println(Arrays.toString(Heap.outof));
+		Heap.Dequeue();
+		System.out.println(Heap.Capacity);
+		System.out.println(Arrays.toString(Heap.key));
+		System.out.println(Arrays.toString(Heap.into));
+		System.out.println(Arrays.toString(Heap.outof));
+		Heap.Dequeue();
+		System.out.println(Heap.Capacity);
+		System.out.println(Arrays.toString(Heap.key));
+		System.out.println(Arrays.toString(Heap.into));
+		System.out.println(Arrays.toString(Heap.outof));
 	
 	}
 }
