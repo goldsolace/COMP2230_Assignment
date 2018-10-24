@@ -76,6 +76,7 @@ public class IndirectHeap
 	//places a new value in the heap then rearranges to keep structure 
 	public void Enqueue(Station Value)
 	{
+		//if heap is empty
 		if (key[1]==null) {
 			key[1]		= Value;
 			into[1]		= 1;
@@ -86,25 +87,34 @@ public class IndirectHeap
 			Station[] tempKey = new Station[Capacity+1];
 			int[] tempInto = new int[Capacity+1];
 			int[] tempOutof = new int[Capacity+1];
+			//copy all values into new arrays
 			for (int i=1; i<=Capacity-1; i++) {
 				tempKey[i] = key[i];
 				tempInto[i] = into[i];
 				tempOutof[i] = outof[i]; 
 			}
+			//place newest value into key and place it ad the end of the heap
 			tempKey[Capacity] = Value;
 			tempInto[Capacity] = Capacity;
 			tempOutof[Capacity] = Capacity;
 			key = tempKey;
 			into = tempInto;
 			outof = tempOutof;
+			//reorder heap
 			Heapify(key,outof,into);
 		}
 	}
 	//Removes first value in heap
 	public void Dequeue()
 	{
+		//If heap is empty
 		if (key[1]==null) {
 			System.out.println("Heap is empty");
+		}
+		//If heap has only 1 value
+		else if (Capacity==1)
+		{
+			key[1]=null;
 		}
 		else 
 		{
@@ -112,6 +122,7 @@ public class IndirectHeap
 			int[] tempInto = new int[Capacity];
 			int[] tempOutof = new int[Capacity];
 			int j=1;
+			//copy all values in key except one in first place
 			for (int i=1; i<=Capacity; i++) {
 				if(i!=outof[1]) {
 				
@@ -121,6 +132,8 @@ public class IndirectHeap
 			}
 			key = tempKey;
 			j=1;
+			//Place value in last place in first. Copy all values apart from 1 
+			//update outof each time we change into
 			for (int i=1; i<=Capacity; i++) {
 				if(into[i]==Capacity)
 				{
@@ -139,7 +152,17 @@ public class IndirectHeap
 			outof = tempOutof;
 		}
 		Capacity--;
+		//reorder heap
 		Heapify(key,outof,into);
+	}
+
+	//Return true if the Heap is empty
+	public boolean isEmpty()
+	{
+		if (key[1]==null)
+			return true;
+		else
+			return false;
 	}
 	
 	//Return smalled value in the heap (the first value)
@@ -195,43 +218,93 @@ public class IndirectHeap
 
 		IndirectHeap Heap = new IndirectHeap();
 		Heap.Enqueue(station1);
+		System.out.println(Heap.isEmpty());
+		System.out.println(Heap.Capacity);
+		System.out.println(Arrays.toString(Heap.key));
+		System.out.println(Arrays.toString(Heap.into));
+		System.out.println(Arrays.toString(Heap.outof));
 		Heap.Enqueue(station2);
+		System.out.println(Heap.isEmpty());
+		System.out.println(Heap.Capacity);
+		System.out.println(Arrays.toString(Heap.key));
+		System.out.println(Arrays.toString(Heap.into));
+		System.out.println(Arrays.toString(Heap.outof));
 		Heap.Enqueue(station3);
+		System.out.println(Heap.isEmpty());
+		System.out.println(Heap.Capacity);
+		System.out.println(Arrays.toString(Heap.key));
+		System.out.println(Arrays.toString(Heap.into));
+		System.out.println(Arrays.toString(Heap.outof));
 		Heap.Enqueue(station4);
+		System.out.println(Heap.isEmpty());
+		System.out.println(Heap.Capacity);
+		System.out.println(Arrays.toString(Heap.key));
+		System.out.println(Arrays.toString(Heap.into));
+		System.out.println(Arrays.toString(Heap.outof));
 		Heap.Enqueue(station5);
+		System.out.println(Heap.isEmpty());
+		System.out.println(Heap.Capacity);
+		System.out.println(Arrays.toString(Heap.key));
+		System.out.println(Arrays.toString(Heap.into));
+		System.out.println(Arrays.toString(Heap.outof));
 		Heap.Enqueue(station6);
+		System.out.println(Heap.isEmpty());
+		System.out.println(Heap.Capacity);
+		System.out.println(Arrays.toString(Heap.key));
+		System.out.println(Arrays.toString(Heap.into));
+		System.out.println(Arrays.toString(Heap.outof));
 		Heap.Enqueue(station7);
+		System.out.println(Heap.isEmpty());
+		System.out.println(Heap.Capacity);
+		System.out.println(Arrays.toString(Heap.key));
+		System.out.println(Arrays.toString(Heap.into));
+		System.out.println(Arrays.toString(Heap.outof));
 		
+	
+		Heap.Dequeue();
+		System.out.println(Heap.isEmpty());
 		System.out.println(Heap.Capacity);
 		System.out.println(Arrays.toString(Heap.key));
 		System.out.println(Arrays.toString(Heap.into));
 		System.out.println(Arrays.toString(Heap.outof));
 		Heap.Dequeue();
+		System.out.println(Heap.isEmpty());
 		System.out.println(Heap.Capacity);
 		System.out.println(Arrays.toString(Heap.key));
 		System.out.println(Arrays.toString(Heap.into));
 		System.out.println(Arrays.toString(Heap.outof));
 		Heap.Dequeue();
+		System.out.println(Heap.isEmpty());
 		System.out.println(Heap.Capacity);
 		System.out.println(Arrays.toString(Heap.key));
 		System.out.println(Arrays.toString(Heap.into));
 		System.out.println(Arrays.toString(Heap.outof));
 		Heap.Dequeue();
+		System.out.println(Heap.isEmpty());
 		System.out.println(Heap.Capacity);
 		System.out.println(Arrays.toString(Heap.key));
 		System.out.println(Arrays.toString(Heap.into));
 		System.out.println(Arrays.toString(Heap.outof));
 		Heap.Dequeue();
+		System.out.println(Heap.isEmpty());
 		System.out.println(Heap.Capacity);
 		System.out.println(Arrays.toString(Heap.key));
 		System.out.println(Arrays.toString(Heap.into));
 		System.out.println(Arrays.toString(Heap.outof));
 		Heap.Dequeue();
+		System.out.println(Heap.isEmpty());
 		System.out.println(Heap.Capacity);
 		System.out.println(Arrays.toString(Heap.key));
 		System.out.println(Arrays.toString(Heap.into));
 		System.out.println(Arrays.toString(Heap.outof));
 		Heap.Dequeue();
+		System.out.println(Heap.isEmpty());
+		System.out.println(Heap.Capacity);
+		System.out.println(Arrays.toString(Heap.key));
+		System.out.println(Arrays.toString(Heap.into));
+		System.out.println(Arrays.toString(Heap.outof));
+		Heap.Enqueue(station7);
+		System.out.println(Heap.isEmpty());
 		System.out.println(Heap.Capacity);
 		System.out.println(Arrays.toString(Heap.key));
 		System.out.println(Arrays.toString(Heap.into));
