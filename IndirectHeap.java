@@ -5,7 +5,11 @@
  * @studentID 3163458
  * @lastModified: 25-10-2018
  */
+import java.io.File;
 import java.util.*;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.DocumentBuilder;
+import org.w3c.dom.*;
 //Indirect heap of intergers. Capacity can be changed we adding/taking away elements and when first array is added. Enqueue and Dequeue.
 public class IndirectHeap
 {
@@ -150,8 +154,9 @@ public class IndirectHeap
 			}
 			into = tempInto;
 			outof = tempOutof;
+			Capacity--;
 		}
-		Capacity--;
+		
 		//reorder heap
 		Heapify(key,outof,into);
 	}
@@ -171,46 +176,47 @@ public class IndirectHeap
 		return key[outof[1]];
 	}
 
+	
 	public static void main(String[] args)
 	{
 
-		Station station1 = new Station("Name1", "Line1");
+		Station station1 = new Station("Name1", "Line1", true);
 		station1.setTime(50);
 		station1.getTime(); // Returns 50
 		station1.setChanges(50);
 		station1.getTime(); // Returns 50
 
-		Station station2 = new Station("Name2", "Line2");
+		Station station2 = new Station("Name2", "Line2", true);
 		station2.setTime(25);
 		station2.getTime(); // Returns 50
 		station2.setChanges(25);
 		station2.getTime(); // Returns 50
 
-		Station station3 = new Station("Name3", "Line3");
+		Station station3 = new Station("Name3", "Line3", true);
 		station3.setTime(20);
 		station3.getTime(); // Returns 50
 		station3.setChanges(20);
 		station3.getTime(); // Returns 50
 
-		Station station4 = new Station("Name4", "Line4");
+		Station station4 = new Station("Name4", "Line4", true);
 		station4.setTime(5);
 		station4.getTime(); // Returns 50
 		station4.setChanges(5);
 		station4.getTime(); // Returns 50
 
-		Station station5 = new Station("Name5", "Line5");
+		Station station5 = new Station("Name5", "Line5", true);
 		station5.setTime(10);
 		station5.getTime(); // Returns 50
 		station5.setChanges(10);
 		station5.getTime(); // Returns 50
 
-		Station station6 = new Station("Name6", "Line6");
+		Station station6 = new Station("Name6", "Line6", true);
 		station6.setTime(35);
 		station6.getTime(); // Returns 50
 		station6.setChanges(35);
 		station6.getTime(); // Returns 50
 
-		Station station7 = new Station("Name7", "Line7");
+		Station station7 = new Station("Name7", "Line7", true);
 		station7.setTime(1);
 		station7.getTime(); // Returns 50
 		station7.setChanges(1);
@@ -303,12 +309,14 @@ public class IndirectHeap
 		System.out.println(Arrays.toString(Heap.key));
 		System.out.println(Arrays.toString(Heap.into));
 		System.out.println(Arrays.toString(Heap.outof));
-		Heap.Enqueue(station7);
+		Heap.Dequeue();
 		System.out.println(Heap.isEmpty());
 		System.out.println(Heap.Capacity);
 		System.out.println(Arrays.toString(Heap.key));
 		System.out.println(Arrays.toString(Heap.into));
 		System.out.println(Arrays.toString(Heap.outof));
+		
+		
 	
 	}
 }
