@@ -81,7 +81,7 @@ public class assign1 {
 			Collections.sort(destinations);
 			
 			// Print out optimal path to destination
-			output2(destinations.get(0));
+			output(destinations.get(0));
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -186,18 +186,22 @@ public class assign1 {
 		origin.setChanges(0);
 
 		// Add origin to queue
-		PriorityQueue<Station> queue = new PriorityQueue<Station>();
-		queue.add(origin);
+		//PriorityQueue<Station> queue = new PriorityQueue<Station>();
+		//queue.add(origin);
+		IndirectHeap queue = new IndirectHeap();
+		queue.Enqueue(origin);
 
 		// While there are edges that haven't been visited
 		while (!queue.isEmpty()) {
 
-			Station station = queue.poll();
+			//Station station = queue.poll();
+			Station station = queue.Smallest();
+			queue.Dequeue();
 			
 			// Loop through all edges of station
 			for (Edge edge : station.getEdges()) {
 
-				// Time to reach edge station from current station
+				// Time to reach ed//ge station from current station
 				int newTime = station.getTime() + edge.getDuration();
 
 				// If station names are the same and duration is 15 then it's a line change
@@ -218,7 +222,8 @@ public class assign1 {
 						edge.getStation().addToPath(station);
 						
 						// Add back in the station
-						queue.add(edge.getStation());
+						//queue.add(edge.getStation());
+						queue.Enqueue(edge.getStation());
 					}
 				// Optimise for changes
 				} else {
@@ -232,74 +237,12 @@ public class assign1 {
 						edge.getStation().addToPath(station);
 						
 						// Add back in the station
-						queue.add(edge.getStation());
+						//queue.add(edge.getStation());
+						queue.Enqueue(edge.getStation());
 					}
 				}	
 			}
 		}
-	}
-
-	/**
-	 * Print out the optimal path from origin to destination station
-	 * in specific format stating from station, to station, line used, line changes
-	 * and time and changes of total trip.
-	 *
-	 * @param destination station name
-	 */
-	public static void output(Station destination) {
-		int time = 0;
-		//System.out.print("[Time: "+destination.getTime()+", Changes: "+destination.getChanges()+"] "+origin.getName()+" - "+destination.getName()+"\n");
-		ArrayList<Station> path = destination.getPath();
-
-		Station cur = path.get(0);
-		Station next = path.get(0);
-
-		// Loop through stations along path
-		for (int i = 1; i < path.size()-1; i++) {
-			cur = path.get(i);
-			next = path.get(i+1);
-
-			// === Only for testing correct time===
-			for (Edge e : cur.getEdges()) {
-				if (e.getStation() == next) {
-					time += cur.getEdges().get(cur.getEdges().indexOf(e)).getDuration();
-				}
-			}
-			
-			// If current and next station name is the same then it's a line change
-			if (cur.getName().equals(next.getName())) {
-				cur = path.get(++i);
-				next = path.get(i+1);
-
-				System.out.println("then change to line "+cur.getLine()+", and continue to "+next.getName()+";");
-
-				// === Only for testing correct time===
-				for (Edge e : cur.getEdges()) {
-					if (e.getStation() == next) {
-						time += cur.getEdges().get(cur.getEdges().indexOf(e)).getDuration();
-					}
-				}
-			} else {
-				System.out.println("From "+cur.getName()+", take line "+cur.getLine()+" to station "+next.getName()+";");
-			}
-		}
-		System.out.println("From "+next.getName()+", take line "+next.getLine()+" to station "+destination.getName()+".");
-
-		// === Only for testing correct time===
-		for (Edge e : next.getEdges()) {
-			if (e.getStation() == destination) {
-				time += next.getEdges().get(next.getEdges().indexOf(e)).getDuration();
-			}
-		}
-
-		if (isCriterionTime) {
-			System.out.println("The total trip will take approximately "+destination.getTime()+" minutes and will have "+destination.getChanges()+" changes.");
-		} else {
-			System.out.println("The total trip will have "+destination.getChanges()+" changes and will take approximately "+destination.getTime()+" minutes.");
-		}
-		
-		// === Only for testing correct time===
-		System.out.println("\nTime it should have taken: "+time);
 	}
 	
 	/**
@@ -309,7 +252,7 @@ public class assign1 {
 	 *
 	 * @param destination station name
 	 */
-	public static void output2(Station destination) {
+	public static void output(Station destination) {
 		int time = 0;
 		ArrayList<Station> path = destination.getPath();
 
@@ -320,28 +263,12 @@ public class assign1 {
 		for (int i = 1; i < path.size()-1; i++) {
 			cur = path.get(i);
 			next = path.get(i+1);
-
-			// === Only for testing correct time===
-			for (Edge e : cur.getEdges()) {
-				if (e.getStation() == next) {
-					time += cur.getEdges().get(cur.getEdges().indexOf(e)).getDuration();
-				}
-			}
 			
 			// If current and next station name is the same then it's a line change
 			if (cur.getName().equals(next.getName())) {
 				System.out.print(cur.getName()+";\nthen change to line "+next.getLine()+", and continue to ");
 				cur = path.get(++i);
 				next = path.get(i+1);
-
-				//System.out.println("then change to line "+cur.getLine()+", and continue to "+next.getName()+";");
-
-				// === Only for testing correct time===
-				for (Edge e : cur.getEdges()) {
-					if (e.getStation() == next) {
-						time += cur.getEdges().get(cur.getEdges().indexOf(e)).getDuration();
-					}
-				}
 			} else if (i == 1) {
 				System.out.print("From "+cur.getName()+", take line "+cur.getLine()+" to station ");
 			}
@@ -349,15 +276,7 @@ public class assign1 {
 		if (next == path.get(0)) {
 			System.out.println("From "+next.getName()+", take line "+next.getLine()+" to station "+destination.getName()+".");
 		}else {
-			System.out.println(destination.getName()+".");	
-		}
-		
-
-		// === Only for testing correct time===
-		for (Edge e : next.getEdges()) {
-			if (e.getStation() == destination) {
-				time += next.getEdges().get(next.getEdges().indexOf(e)).getDuration();
-			}
+			System.out.println(destination.getName()+".");
 		}
 
 		if (isCriterionTime) {
@@ -365,8 +284,5 @@ public class assign1 {
 		} else {
 			System.out.println("The total trip will have "+destination.getChanges()+" changes and will take approximately "+destination.getTime()+" minutes.");
 		}
-		
-		// === Only for testing correct time===
-		System.out.println("\nTime it should have taken: "+time);
 	}
 }
