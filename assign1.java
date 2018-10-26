@@ -74,14 +74,17 @@ public class assign1 {
 				origin.addEdge(new Edge(s, 0));
 			}
 
+			// Create single source destination station with 0 weight edges to all lines at destination station
+			Station destination = new Station(destinations.get(0).getName(), "", isCriterionTime);
+			for (Station s : destinations) {
+				s.addEdge(new Edge(destination, 0));
+			}
+
 			// Perform dijkstra's algorithm on origin
 			dijkstra(origin);
-
-			// Sort destinations so optimal destination line at index 0
-			Collections.sort(destinations);
 			
 			// Print out optimal path to destination
-			output(destinations.get(0));
+			output(destination);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -106,10 +109,6 @@ public class assign1 {
 
 		// Get list of stations
 		NodeList stationNodes = doc.getElementsByTagName("Station");
-
-		// Number of Stations
-		System.out.println("Stations: "+stationNodes.getLength());
-		int l = 0;
 		
 		// Loop through stations 
 		for (int i = 0; i < stationNodes.getLength(); i++) {
@@ -146,7 +145,6 @@ public class assign1 {
 				NodeList edges = station.getElementsByTagName("StationEdge");
 				
 				for (int j = 0; j < edges.getLength(); j++) {
-					l++;
 					Node eNode = edges.item(j);
 					
 					if (eNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -168,7 +166,6 @@ public class assign1 {
 				}
 			}
 		}
-		System.out.println("Edges: "+l+"\n");
 	}
 
 	/**
@@ -186,15 +183,12 @@ public class assign1 {
 		origin.setChanges(0);
 
 		// Add origin to queue
-		//PriorityQueue<Station> queue = new PriorityQueue<Station>();
-		//queue.add(origin);
 		IndirectHeap queue = new IndirectHeap();
 		queue.Enqueue(origin);
 
 		// While there are edges that haven't been visited
 		while (!queue.isEmpty()) {
 
-			//Station station = queue.poll();
 			Station station = queue.Smallest();
 			queue.Dequeue();
 			
@@ -222,7 +216,6 @@ public class assign1 {
 						edge.getStation().addToPath(station);
 						
 						// Add back in the station
-						//queue.add(edge.getStation());
 						queue.Enqueue(edge.getStation());
 					}
 				// Optimise for changes
@@ -237,7 +230,6 @@ public class assign1 {
 						edge.getStation().addToPath(station);
 						
 						// Add back in the station
-						//queue.add(edge.getStation());
 						queue.Enqueue(edge.getStation());
 					}
 				}	
